@@ -1,5 +1,9 @@
 name: "Hourly update of api.json (Open Exchange Rates)"
 
+# Allow the built-in GITHUB_TOKEN to push to this repo
+permissions:
+  contents: write
+
 # Runs at minute 0 of every hour (UTC)
 on:
   schedule:
