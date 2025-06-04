@@ -1,0 +1,44 @@
+name: "Hourly update of api.json (Open Exchange Rates)"
+
+# Runs at minute 0 of every hour (UTC)
+on:
+  schedule:
+    - cron: "0 * * * *"
+  # (Optional) Also allow manual dispatch in case you want to test
+  workflow_dispatch:
+
+jobs:
+  rebuild-api:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Check out the repository
+      - name: "Checkout repository"
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0   # so we can commit back
+
+      # 2. Fetch external API & write to public/api.json
+      - name: "Fetch Open Exchange Rates latest.json"
+        run: |
+          set -e
+          echo "🕒 $(date -u '+%Y-%m-%dT%H:%M:%SZ'): Fetching latest.json from OpenExchangeRates..."
+          curl -fsSL "https://openexchangerates.org/api/latest.json?app_id=${{ secrets.OXR_APP_ID }}" \
+            -o public/api.json
+          echo "✅ API fetched and saved to public/api.json"
+
+      # 3. Commit & push only if public/api.json changed
+      - name: "Commit and push api.json if changed"
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          if ! git diff --quiet public/api.json; then
+            git add public/api.json
+            git commit -m "Hourly rebuild of api.json @ $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+            git push
+            echo "🔄 Pushed updated api.json"
+          else
+            echo "ℹ️ No change in api.json; skipping commit."
+          fi
