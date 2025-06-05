@@ -7,7 +7,7 @@ permissions:
 # Runs at minute 0 of every hour (UTC)
 on:
   schedule:
-    - cron: "0 * * * *"
+    - cron: "1 * * * *"
   # (Optional) Also allow manual dispatch in case you want to test
   workflow_dispatch:
 
@@ -42,7 +42,7 @@ jobs:
             git add public/api.json
             git commit -m "Hourly rebuild of api.json @ $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
             git push
-            echo "🔄 Pushed updated api.json"
+            echo "🔄 Pushed updated api.json $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
           else
-            echo "ℹ️ No change in api.json; skipping commit."
+            echo "ℹ️ No change in api.json; skipping commit. $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
           fi
