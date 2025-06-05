@@ -9,7 +9,7 @@ on:
   schedule:
     - cron: "1 * * * *"
   # (Optional) Also allow manual dispatch in case you want to test
-  workflow_dispatch:
+  # workflow_dispatch:
 
 jobs:
   rebuild-api:
